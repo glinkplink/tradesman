@@ -1,7 +1,7 @@
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { authRouter } from "./authRouter";
-import { getAdminFromRequest } from "./_core/simpleAuth";tedProcedure } from "./_core/trpc";
+import { getAdminFromRequest } from "./_core/simpleAuth";
 import { z } from "zod";
 import { 
   getUserByPhone, 
@@ -39,9 +39,13 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin access required' });
   }
   return next({ ctx });
-}export const appRouter = router({
+});
+
+export const appRouter = router({
   system: systemRouter,
-  auth: authRouter,webhook handler (public endpoint for Twilio)
+  auth: authRouter,
+
+  // SMS webhook handler (public endpoint for Twilio)
   sms: router({
     webhook: publicProcedure
       .input(z.object({
