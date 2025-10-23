@@ -2,11 +2,40 @@ import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Loader2 } from "lucide-react";
+import { useLocation } from "wouter";
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function Dashboard() {
+  const [, setLocation] = useLocation();
+  const { data: admin, isLoading: authLoading } = trpc.auth.me.useQuery();
   const { data: stats, isLoading: statsLoading } = trpc.dashboard.stats.useQuery();
   const { data: timeSeries, isLoading: timeSeriesLoading } = trpc.dashboard.documentsTimeSeries.useQuery({ days: 30 });
   const { data: newUsers, isLoading: newUsersLoading } = trpc.dashboard.newUsersPerWeek.useQuery({ weeks: 8 });
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      setLocation("/login");
+    },
+  });
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !admin) {
+      setLocation("/login");
+    }
+  }, [admin, authLoading, setLocation]);
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!admin) {
+    return null; // Will redirect
+  }
 
   if (statsLoading) {
     return (
@@ -23,9 +52,14 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">SMS Invoice Dashboard</h1>
-          <p className="text-slate-600">Monitor your invoicing system performance</p>
+        <header className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-4xl font-bold text-slate-900 mb-2">SMS Invoice Dashboard</h1>
+            <p className="text-slate-600">Monitor your invoicing system performance</p>
+          </div>
+          <Button variant="outline" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}>
+            {logoutMutation.isPending ? "Logging out..." : "Logout"}
+          </Button>
         </header>
 
         {/* User Stats */}
