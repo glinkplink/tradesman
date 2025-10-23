@@ -71,14 +71,21 @@ export async function sendEmail(
   subject: string, 
   body: string, 
   pdfBuffer?: Buffer,
-  filename?: string
+  filename?: string,
+  documentType?: 'invoice' | 'quote'
 ): Promise<{ success: boolean; error?: string }> {
   if (!resendClient) {
     console.warn("[Resend] Not configured, skipping email send");
     return { success: false, error: "Resend not configured" };
   }
 
-  const fromEmail = process.env.FROM_EMAIL || 'invoices@yourdomain.com';
+  // Use different email addresses based on document type
+  let fromEmail = process.env.FROM_EMAIL || 'invoices@fieldtext.app';
+  if (documentType === 'invoice') {
+    fromEmail = 'invoices@fieldtext.app';
+  } else if (documentType === 'quote') {
+    fromEmail = 'quotes@fieldtext.app';
+  }
 
   try {
     const emailData: any = {

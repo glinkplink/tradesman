@@ -7,7 +7,7 @@ import { Link } from "wouter";
  * All content in this page are only for example, delete if unneeded
  * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
  */
-export default function Home() {
+export default function About() {
   // The userAuth hooks provides authentication state
   // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
   let { user, loading, error, isAuthenticated, logout } = useAuth();
@@ -51,7 +51,7 @@ export default function Home() {
           </div>
 
           {isAuthenticated && user?.role === 'admin' && (
-            <Link href="/dashboard">
+            <Link href="/">
               <Button size="lg" className="text-lg px-8 py-6">
                 View Admin Dashboard →
               </Button>

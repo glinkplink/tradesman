@@ -252,7 +252,8 @@ export const appRouter = router({
             `${parsed.type === 'invoice' ? 'Invoice' : 'Quote'} from ${currentUser.companyName || currentUser.name}`,
             emailBody,
             pdfData,
-            fileName
+            fileName,
+            parsed.type
           );
         }
 
@@ -276,7 +277,8 @@ export const appRouter = router({
             `Your ${parsed.type}: ${doc.documentNumber}`,
             `Here's a copy of your ${parsed.type} for ${parsed.clientName}.\n\nTotal: $${(parsed.totalAmount / 100).toFixed(2)}`,
             pdfData,
-            fileName
+            fileName,
+            parsed.type
           );
         }
 
